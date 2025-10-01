@@ -37,5 +37,6 @@ executable('my_app',
     app_sources,
     # Example dependencies:
     # dependencies: [fmt_dep],
+    link_args: ['-static', '-static-libgcc', '-static-libstdc++'],
     install: true
 )
