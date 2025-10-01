@@ -191,7 +191,7 @@ void handleRegister()
     BankCustomer newBankCustomer(newId, name, initialDeposit);
     bankCustomers.push_back(newBankCustomer);
 
-    Buyer newBuyer(newId, name, bankCustomers.back());
+    Buyer newBuyer(newId, name, address, phone, email, bankCustomers.back());
     buyers.push_back(newBuyer);
 
     cout << "Registration successful!" << endl;
@@ -221,7 +221,7 @@ void handleRegister()
         getline(cin, storeEmail);
 
         // Create seller account
-        seller newSeller(newBuyer, newId, storeName);
+        seller newSeller(newBuyer, newId, storeName, storeAddress, storePhone, storeEmail);
         sellers.push_back(newSeller);
         currentUserIsSeller = true;
 
@@ -254,10 +254,26 @@ void showBuyerMenu()
         case CHECK_ACCOUNT:
             cout << "\n=== ACCOUNT STATUS ===" << endl;
             cout << "Name: " << buyers[currentBuyerId].getName() << endl;
+            cout << "Address: " << buyers[currentBuyerId].getAddress() << endl;
+            cout << "Phone: " << buyers[currentBuyerId].getPhone() << endl;
+            cout << "Email: " << buyers[currentBuyerId].getEmail() << endl;
             cout << "Account Type: Buyer";
             if (currentUserIsSeller)
             {
                 cout << " & Seller";
+                // Find and display seller information
+                for (size_t i = 0; i < sellers.size(); i++)
+                {
+                    if (sellers[i].getName() == buyers[currentBuyerId].getName())
+                    {
+                        cout << "\n--- Store Information ---" << endl;
+                        cout << "Store Name: " << sellers[i].getStoreName() << endl;
+                        cout << "Store Address: " << sellers[i].getStoreAddress() << endl;
+                        cout << "Store Phone: " << sellers[i].getStorePhone() << endl;
+                        cout << "Store Email: " << sellers[i].getStoreEmail() << endl;
+                        break;
+                    }
+                }
             }
             cout << endl;
 
@@ -318,7 +334,7 @@ void handleSellerUpgrade()
     getline(cin, storeEmail);
 
     // Create seller account
-    seller newSeller(buyers[currentBuyerId], buyers[currentBuyerId].getId(), storeName);
+    seller newSeller(buyers[currentBuyerId], buyers[currentBuyerId].getId(), storeName, storeAddress, storePhone, storeEmail);
     sellers.push_back(newSeller);
     currentUserIsSeller = true;
 
