@@ -1,7 +1,3 @@
-# Online Marketplace System - DPBO Quiz
-
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/XF7mZCna)
-
 ## 👤 Identity
 
 **Name:** Ridwan Alfarezi  
@@ -21,40 +17,6 @@ A comprehensive **Online Marketplace System** built in C++ featuring buyer-selle
 - 🏦 **Banking System**: Accounts, transactions, deposits, withdrawals
 - 📊 **Analytics**: Sales tracking, customer insights, financial reports
 - 👥 **User Management**: Registration, login, profile management
-
----
-
-## 🏗️ System Architecture
-
-### Class Hierarchy
-
-```
-BankCustomer (base banking features)
-    ↓
-  Buyer (shopping cart, orders, extends BankCustomer)
-    ↓
-  Seller (inventory management, inherits from Buyer)
-
-Order (manages purchase orders)
-Store (marketplace analytics)
-Bank (transaction tracking)
-Transaction (individual transactions)
-Item (product information)
-```
-
-### Core Files
-
-```
-quiz1-ridwanalfarezi/
-├── main.cpp              # Main program with Order & Store classes
-├── buyer.h               # Buyer class with shopping cart
-├── seller.h              # Seller class with inventory management
-├── bank.h                # Bank class with transaction tracking
-├── bank_customer.h/.cpp  # BankCustomer class
-├── item.h                # Item class
-├── transaction.h         # Transaction class
-└── README.md            # This file
-```
 
 ---
 
