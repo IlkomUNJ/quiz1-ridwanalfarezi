@@ -25,17 +25,25 @@ add_global_arguments(cpp_args, language : 'cpp')
 
 app_sources = [
     'main.cpp',
-    'item.h',
-    'bank_customer.h', 
-    'bank_customer.cpp',
-    'bank.h',
-    'item.h', 'seller.h'
-# Add other source files here, e.g., 'src/helper.cpp'
+    'bank_customer/bank_customer.cpp',
+    'bank_customer/bank_customer.h',
+    'order/order.cpp',
+    'order/order.h',
+    'store/store.cpp',
+    'store/store.h',
+    'buyer/buyer.cpp',
+    'buyer/buyer.h',
+    'seller/seller.cpp',
+    'seller/seller.h',
+    'bank/bank.h',
+    'item/item.h',
+    'transaction/transaction.h'
 ]
 
 executable('my_app',
     app_sources,
     # Example dependencies:
     # dependencies: [fmt_dep],
+    link_args: ['-static', '-static-libgcc', '-static-libstdc++'],
     install: true
 )
