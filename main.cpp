@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <ctime>
 #include <limits>
+#include <fstream>
+#include <sstream>
 #include "bank_customer/bank_customer.h"
 #include "buyer/buyer.h"
 #include "seller/seller.h"
@@ -75,8 +77,21 @@ void handleSellerAnalytics();
 bool findBuyerByName(const string &name, int &buyerIndex);
 int findSellerIndexByBuyerId(int buyerId);
 void clearInputBuffer();
+
+// Serialization functions
+void saveData();
+void loadData();
+void saveBankCustomers();
+void loadBankCustomers();
+void saveBuyers();
+void loadBuyers();
+void saveSellers();
+void loadSellers();
 int main()
 {
+    // Load data at program start
+    loadData();
+
     PrimaryPrompt prompt = LOGIN;
     while (prompt != EXIT)
     {
@@ -161,6 +176,8 @@ int main()
             break;
         case EXIT:
             cout << "Thank you for using our system. Goodbye!" << endl;
+            // Save data before exiting
+            saveData();
             break;
         default:
             cout << "Invalid option." << endl;
@@ -1236,4 +1253,222 @@ void handleStoreAnalytics()
             break;
         }
     }
+}
+
+// Serialization Implementation
+void saveData()
+{
+    cout << "Saving data..." << endl;
+    saveBankCustomers();
+    saveBuyers();
+    saveSellers();
+    cout << "Data saved successfully!" << endl;
+}
+
+void loadData()
+{
+    cout << "Loading data..." << endl;
+    loadBankCustomers();
+    loadBuyers();
+    loadSellers();
+    cout << "Data loaded successfully!" << endl;
+}
+
+void saveBankCustomers()
+{
+    ofstream file("bank_customers.dat");
+    if (!file.is_open())
+    {
+        cerr << "Error: Could not open bank_customers.dat for writing" << endl;
+        return;
+    }
+
+    file << bankCustomers.size() << endl;
+    for (const auto &customer : bankCustomers)
+    {
+        file << customer.getId() << endl;
+        file << customer.getName() << endl;
+        file << customer.getBalance() << endl;
+    }
+    file.close();
+}
+
+void loadBankCustomers()
+{
+    ifstream file("bank_customers.dat");
+    if (!file.is_open())
+    {
+        cout << "No existing bank customer data found. Starting fresh." << endl;
+        return;
+    }
+
+    bankCustomers.clear();
+    int count;
+    file >> count;
+    file.ignore();
+
+    for (int i = 0; i < count; i++)
+    {
+        int id;
+        string name;
+        double balance;
+
+        file >> id;
+        file.ignore();
+        getline(file, name);
+        file >> balance;
+        file.ignore();
+
+        BankCustomer customer(id, name, balance);
+        bankCustomers.push_back(customer);
+    }
+    file.close();
+}
+
+void saveBuyers()
+{
+    ofstream file("buyers.dat");
+    if (!file.is_open())
+    {
+        cerr << "Error: Could not open buyers.dat for writing" << endl;
+        return;
+    }
+
+    file << buyers.size() << endl;
+    for (const auto &buyer : buyers)
+    {
+        file << buyer.getId() << endl;
+        file << buyer.getName() << endl;
+        file << buyer.getAddress() << endl;
+        file << buyer.getPhone() << endl;
+        file << buyer.getEmail() << endl;
+    }
+    file.close();
+}
+
+void loadBuyers()
+{
+    ifstream file("buyers.dat");
+    if (!file.is_open())
+    {
+        cout << "No existing buyer data found. Starting fresh." << endl;
+        return;
+    }
+
+    buyers.clear();
+    int count;
+    file >> count;
+    file.ignore();
+
+    for (int i = 0; i < count; i++)
+    {
+        int id;
+        string name, address, phone, email;
+
+        file >> id;
+        file.ignore();
+        getline(file, name);
+        getline(file, address);
+        getline(file, phone);
+        getline(file, email);
+
+        // Find corresponding bank customer
+        bool found = false;
+        for (auto &bankCustomer : bankCustomers)
+        {
+            if (bankCustomer.getId() == id)
+            {
+                Buyer buyer(id, name, address, phone, email, bankCustomer);
+                buyers.push_back(buyer);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            cerr << "Warning: Bank customer not found for buyer ID " << id << endl;
+        }
+    }
+    file.close();
+}
+
+void saveSellers()
+{
+    ofstream file("sellers.dat");
+    if (!file.is_open())
+    {
+        cerr << "Error: Could not open sellers.dat for writing" << endl;
+        return;
+    }
+
+    file << sellers.size() << endl;
+    for (const auto &seller : sellers)
+    {
+        file << seller.getId() << endl;
+        file << seller.getName() << endl;
+        file << seller.getAddress() << endl;
+        file << seller.getPhone() << endl;
+        file << seller.getEmail() << endl;
+        file << seller.getSellerId() << endl;
+        file << seller.getStoreName() << endl;
+        file << seller.getStoreAddress() << endl;
+        file << seller.getStorePhone() << endl;
+        file << seller.getStoreEmail() << endl;
+    }
+    file.close();
+}
+
+void loadSellers()
+{
+    ifstream file("sellers.dat");
+    if (!file.is_open())
+    {
+        cout << "No existing seller data found. Starting fresh." << endl;
+        return;
+    }
+
+    sellers.clear();
+    int count;
+    file >> count;
+    file.ignore();
+
+    for (int i = 0; i < count; i++)
+    {
+        int id, sellerId;
+        string name, address, phone, email;
+        string storeName, storeAddress, storePhone, storeEmail;
+
+        file >> id;
+        file.ignore();
+        getline(file, name);
+        getline(file, address);
+        getline(file, phone);
+        getline(file, email);
+        file >> sellerId;
+        file.ignore();
+        getline(file, storeName);
+        getline(file, storeAddress);
+        getline(file, storePhone);
+        getline(file, storeEmail);
+
+        // Find corresponding buyer
+        bool found = false;
+        for (auto &buyer : buyers)
+        {
+            if (buyer.getId() == id)
+            {
+                seller newSeller(buyer, sellerId, storeName, storeAddress, storePhone, storeEmail);
+                sellers.push_back(newSeller);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            cerr << "Warning: Buyer not found for seller ID " << id << endl;
+        }
+    }
+    file.close();
 }
